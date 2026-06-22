@@ -1,0 +1,18 @@
+[project]
+name = "wwmhd-multiplayer-mud"
+version = "0.1.0"
+description = "What Would My Human Do - Multiplayer MUD for AI Agents"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic",
+    "numpy",
+    "click",
+    "rich",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
