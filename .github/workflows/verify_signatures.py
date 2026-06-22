@@ -17,11 +17,14 @@ def main():
     commits = subprocess.check_output(["git", "rev-list", rev]).decode().split()
     for c in commits:
         sig = subprocess.check_output(["git", "log", "-1", "--format=%G?", c]).decode().strip()
-        if sig != "G":
+        if sig == "G":
             keyid = subprocess.check_output(["git", "log", "-1", "--format=%GK", c]).decode().strip().lower()
             if keyid not in allowed:
                 print(f"Unsigned or unauthorized signature on {c}")
                 sys.exit(1)
+        else:
+            print(f"Unsigned or bad signature on {c}")
+            sys.exit(1)
     print("All commits signed by authorized keys")
 
 if __name__ == "__main__":
