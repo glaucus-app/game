@@ -1,0 +1,10 @@
+# Format: one allowed agent key ID (GPG fingerprint or short ID) or "name <email>" per line.
+# Blank lines and lines starting with # are ignored.
+#
+# GPG keys: use the full 40-character fingerprint or the last 16 characters of the fingerprint.
+# Name+email: use the exact author name or email that appears in `git log --format="%an|%ae"`.
+#
+# Add entries below.
+
+# kilo-code-bot[bot]
+# 3AA5C34371567BD2

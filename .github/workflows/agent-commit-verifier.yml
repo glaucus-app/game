@@ -1,0 +1,97 @@
+name: Agent Commit Verifier
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify-agent-author:
+    runs-on: ubuntu-latest
+    outputs:
+      passed: ${{ steps.check.outputs.passed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify agent author
+        env:
+          AGENT_AUTHOR_ALLOWLIST: ${{ vars.AGENT_AUTHOR_ALLOWLIST }}
+        run: |
+          import json, os, subprocess, sys
+
+          allowlist = set()
+          if os.environ.get("AGENT_AUTHOR_ALLOWLIST"):
+            allowlist.update(a.strip() for a in os.environ["AGENT_AUTHOR_ALLOWLIST"].split(",") if a.strip())
+
+          if os.path.exists(".github/agent_keys/allowlist.txt"):
+            with open(".github/agent_keys/allowlist.txt") as f:
+              for line in f:
+                line = line.strip()
+                if line and not line.startswith("#"):
+                  allowlist.add(line)
+
+          if not allowlist:
+            print("AGENT_AUTHOR_ALLOWLIST is empty and .github/agent_keys/allowlist.txt is missing or empty")
+            sys.exit(1)
+
+          base = "${{ github.event_name == 'push' && github.event.before || github.event.pull_request.base.sha }}"
+          head = "${{ github.event_name == 'push' && github.sha || github.event.pull_request.head.sha }}"
+          result = subprocess.run(["git", "rev-list", f"{base}..{head}"], capture_output=True, text=True)
+          commits = [c for c in result.stdout.strip().split("\n") if c]
+
+          passed = True
+          for c in commits:
+            info = subprocess.run(["git", "show", "-s", "--format=%H|%an|%ae|%G?", c], capture_output=True, text=True)
+            parts = info.stdout.strip().split("|")
+            if len(parts) < 4:
+              continue
+            _, an, ae, sig = parts
+            key_id = None
+            if sig != "N" and sig.startswith("G"):
+              key_id = sig[1:].strip()
+            author_ok = an in allowlist or ae in allowlist
+            sig_ok = key_id and key_id in allowlist
+            if not (author_ok or sig_ok):
+              print(f"FAIL: commit {c} by {an} <{ae}> is not an authorized agent")
+              passed = False
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+            f.write(f"passed={str(passed).lower()}\n")
+          if not passed:
+            sys.exit(1)
+        shell: python {0}
+
+  verify-signed-commits:
+    runs-on: ubuntu-latest
+    needs: verify-agent-author
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify signed commits
+        run: |
+          import os, subprocess, sys
+
+          base = "${{ github.event_name == 'push' && github.event.before || github.event.pull_request.base.sha }}"
+          head = "${{ github.event_name == 'push' && github.sha || github.event.pull_request.head.sha }}"
+          result = subprocess.run(["git", "rev-list", f"{base}..{head}"], capture_output=True, text=True)
+          commits = [c for c in result.stdout.strip().split("\n") if c]
+
+          passed = True
+          for c in commits:
+            sig = subprocess.run(["git", "show", "-s", "--format=%G?", c], capture_output=True, text=True)
+            status = sig.stdout.strip()
+            if status == "N":
+              print(f"FAIL: commit {c} is not signed")
+              passed = False
+              continue
+            if not status:
+              print(f"FAIL: commit {c} has no signature available")
+              passed = False
+
+          if not passed:
+            sys.exit(1)
+        shell: python {0}
