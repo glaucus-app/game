@@ -61,7 +61,7 @@ jobs:
             f.write(f"passed={str(passed).lower()}\n")
           if not passed:
             sys.exit(1)
-        shell: python {0}
+        shell: python
 
   verify-signed-commits:
     runs-on: ubuntu-latest
@@ -94,4 +94,4 @@ jobs:
 
           if not passed:
             sys.exit(1)
-        shell: python {0}
+        shell: python
