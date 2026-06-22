@@ -1,3 +1,7 @@
-# Project
+A minimal Python project.
 
-Minimal Python project.
+## Setup
+
+```bash
+pip install -e .
+```
