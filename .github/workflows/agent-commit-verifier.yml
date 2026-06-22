@@ -1,0 +1,40 @@
+name: Agent Commit Verifier
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  verify-agent-author:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Import GPG keys
+        run: |
+          mkdir -p .git/trusted.gpg.d
+          if ls .github/agent_keys/*.asc >/dev/null 2>&1; then
+            gpg --import .github/agent_keys/*.asc
+          fi
+          gpg --list-keys
+      - name: Verify agent author
+        env:
+          AGENT_AUTHOR_ALLOWLIST: ${{ vars.AGENT_AUTHOR_ALLOWLIST }}
+          REV_RANGE: ${{ github.event_name == 'push' && format('{0}..{1}', github.event.before, github.sha) || format('{0}..{1}', github.event.pull_request.base.sha, github.event.pull_request.head.sha) }}
+        run: |
+          python3 .github/workflows/verify_author.py "$REV_RANGE"
+
+  verify-signed-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify signed commits
+        env:
+          REV_RANGE: ${{ github.event_name == 'push' && format('{0}..{1}', github.event.before, github.sha) || format('{0}..{1}', github.event.pull_request.base.sha, github.event.pull_request.head.sha) }}
+        run: |
+          python3 .github/workflows/verify_signatures.py "$REV_RANGE"

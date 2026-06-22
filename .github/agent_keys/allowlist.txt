@@ -1,0 +1,12 @@
+# Agent Key Allowlist
+
+# Format: one entry per line.
+# Each entry is a GPG key ID (8 or 16 hex chars) or "Name <email>".
+# Lines starting with # are ignored.
+
+# Example entries:
+# 0123456789ABCDEF
+# Clover-Bot <clover@example.com>
+
+# kilo-code-bot[bot] — replace with actual GPG key ID when available
+# kilo-code-bot-key-id
