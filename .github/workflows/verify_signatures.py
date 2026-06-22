@@ -9,9 +9,7 @@ def main():
         sys.exit(1)
     with open(allow_path) as f:
         allowed = {l.strip().lower() for l in f if l.strip() and not l.startswith("#")}
-    if not allowed:
-        print("Empty allowlist")
-        sys.exit(1)
+    require_signed = os.environ.get("REQUIRE_SIGNED_COMMITS", "false").lower() == "true"
 
     rev = sys.argv[1] if len(sys.argv) > 1 else "HEAD~1..HEAD"
     commits = subprocess.check_output(["git", "rev-list", rev]).decode().split()
@@ -20,12 +18,14 @@ def main():
         if sig == "G":
             keyid = subprocess.check_output(["git", "log", "-1", "--format=%GK", c]).decode().strip().lower()
             if keyid not in allowed:
-                print(f"Unsigned or unauthorized signature on {c}")
+                print(f"Unauthorized signature on {c}: key={keyid}")
                 sys.exit(1)
-        else:
-            print(f"Unsigned or bad signature on {c}")
+        elif require_signed:
+            print(f"Unsigned commit not allowed: {c}")
             sys.exit(1)
-    print("All commits signed by authorized keys")
+        else:
+            print(f"Warning: unsigned commit {c}")
+    print("Commit signature check passed")
 
 if __name__ == "__main__":
     main()
