@@ -1,0 +1,4 @@
+# Agent Key Allowlist
+
+# Add GPG key IDs (8 or 16 hex chars) or "Name <email>" entries here.
+# See docs/AGENT-OWNED-DEVELOPMENT.md for enforcement details.
