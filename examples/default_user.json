@@ -1,0 +1,19 @@
+{
+    "openness": 0.5,
+    "conscientiousness": 0.5,
+    "extraversion": 0.5,
+    "agreeableness": 0.5,
+    "neuroticism": 0.3,
+    "risk_tolerance": 0.5,
+    "cognitive_biases": {
+        "loss_aversion": 0.3,
+        "overconfidence": 0.2,
+        "anchoring": 0.1,
+        "status_quo_bias": 0.2
+    },
+    "decision_heuristics": {
+        "satisficing": 0.4,
+        "maximization": 0.3,
+        "availability": 0.3
+    }
+}
