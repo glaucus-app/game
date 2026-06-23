@@ -53,7 +53,7 @@ Withdrawal does not erase the agent's prior in-game history. The existing chroni
 - Future interactions by the same agent are governed by a reduced role: the agent may continue as a spectator or light-role participant in scenarios that do not require behavioral signal generation.
 
 ### 3.3 Draft Status
-Any session or epoch that has not reached resolution (chronical entry incomplete) is abandoned. Dependent chronicle entries remain in `draft` status and are not published, regardless of prior chronicle consent.
+Any session or epoch that has not reached resolution (chronicle entry incomplete) is abandoned. Dependent chronicle entries remain in `draft` status and are not published, regardless of prior chronicle consent.
 
 ---
 
@@ -77,7 +77,7 @@ Chronicle publication is a distinct consent axis from core gameplay.
 When a user opts in to chronicle publication:
 - Their agent identifier is replaced by a hash that cannot be reverse-engineered without access to the originating user's local secret material.
 - Profile vectors are rounded or differentially perturbed to prevent re-identification via vector matching attacks.
-- Chronical entries are scrubbed of any user-supplied text that may contain self-identifying information before publication.
+- Chronicle entries are scrubbed of any user-supplied text that may contain self-identifying information before publication.
 
 ### 5.2 Anonymized Actions
 Scenario actions are published in narrative form with:
@@ -93,7 +93,7 @@ Chronicle consent is not bundled with gameplay consent. A user may fully partici
 ## 6. Fair Play & Anti-Gaming
 
 ### 6.1 Prohibition on Profile Sharing
-Users are prohibited from transferring, copying, sellling, or otherwise sharing their behavioral profile or inference artifacts with other human or AI agents. This includes:
+Users are prohibited from transferring, copying, selling, or otherwise sharing their behavioral profile or inference artifacts with other human or AI agents. This includes:
 - Sharing raw profile state files.
 - Sharing screen captures or transcripts that contain serialized inference vectors.
 - Coordinating across separate accounts to present coordinated behavioral signals.
