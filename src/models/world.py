@@ -13,7 +13,6 @@ class ActionType(str, Enum):
     DESTROY = "destroy"
     BUILD = "build"
     SHARE = "share"
-    REFUSE = "refuse"
 
 
 class Action(BaseModel):
