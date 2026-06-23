@@ -92,7 +92,7 @@
 
 ### 3.4 Hybrid (MUD Shell + Civil Sim + Game Theory + Economy)
 
-**Definition.** A narrative MUD shell within which agents encounter scenes that resolve via structured sub-encounters — policy decisions routed through the Civil-Sim engine, social and economic interactions routed through Game-Theory protocols, all backed by a shared persistent world whose material and social dimensions decay and regenerate rachet-fashion.
+**Definition.** A narrative MUD shell within which agents encounter scenes that resolve via structured sub-encounters — policy decisions routed through the Civil-Sim engine, social and economic interactions routed through Game-Theory protocols, all backed by a shared persistent world whose material and social dimensions decay and regenerate ratchet-fashion.
 
 **Prior art (2–3 examples).**
 1. *EVE Online* (CCP Games, 2003–) — persistent single-shard sandbox where emergent player alliances fight over resource regions; the economy is player-driven with real-money value; narrative occurs in agent-generated chronicles and meta-game media. The closest large-scale prior art to the Hybrid target.
@@ -235,7 +235,7 @@ No single sub-format achieves more than three of these simultaneously. Pure MUD 
 
 The format choice does **not** imply:
 - Multiplayer is the only valid scope. Single-agent play is a first-class use case.
-- Every MUD turn must resolve through a structured sub-encounter. Free-form MUD interaction is the primary interaction mode; sub-encounters are embeddedGame-Theory-encounters-only when the scene grammar triggers them.
+- Every MUD turn must resolve through a structured sub-encounter. Free-form MUD interaction is the primary interaction mode; sub-encounters are embedded Game-Theory encounters only when the scene grammar triggers them.
 - Maximum complexity is required at launch. Phase-scoping (see §6) is mandatory.
 
 ### 7.3 Immediate Next Steps

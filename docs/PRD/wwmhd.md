@@ -243,11 +243,12 @@ Material entropy measures disorder in the physical and economic world. Values ar
 |---|---|---|---|
 | Resource entropy (R𝓔) | 1 - (∑ stockᵢ / ∑ referenceᵢ) | 0–1 | 0.15 |
 | Infrastructure entropy (I𝓔) | ∑(areaᵢ × (1 - integrityᵢ)) / total_area | 0–1 | 0.10 |
-| Climate trajectory entropy (C𝓔) | Σ | 0–1 | 0.05 |
+| Climate trajectory entropy (C𝓔) | max(0, |ΔT|) / T_max | 0–1 | 0.05 |
 | M𝓔 composite | w_R·R𝓔 + w_I·I𝓔 + w_C·C𝓔 | 0–1 | **0.15** (default w = 0.4, 0.35, 0.25) |
 
 Constants:
 - `w_R = 0.4`, `w_I = 0.35`, `w_C = 0.25`.
+- `T_max = 5.0 °C` (climate anomaly normalisation threshold).
 
 ### 6.2 Social Entropy (S𝓔)
 
@@ -428,7 +429,7 @@ Agents form persistent coalitions that pool resources, share information, or coo
 **REQ-032** Coalition fractures shall be published in the epoch chronicle with fault attribution (who breached, what term).  
 **REQ-033** The system shall allow coalition reformation after a configurable cooldown period (default: 2 epochs).
 
-*Traceability:* ADR-001 rates multiplayer dynamics 5/5 for the Hybrid (§2 Positive, item 4; format-comparison.md §5.3). REQ-029–333 map the four-player dynamic families to specific sub-encounter types and define the coalition state machine as a first-class social-entropy modifier.
+*Traceability:* ADR-001 rates multiplayer dynamics 5/5 for the Hybrid (§2 Positive, item 4; format-comparison.md §5.3). REQ-029–033 map the four-player dynamic families to specific sub-encounter types and define the coalition state machine as a first-class social-entropy modifier.
 
 ---
 
@@ -549,23 +550,23 @@ What the user is (conceptually) agreeing to:
 | REQ-016 | Free-form MUD bounded by token limit | Yes — load test | ADR §2 Trade-offs |
 | REQ-017 | Scenario type logged in chronicle | Yes — chronicle schema audit | ADR §2 Positive |
 | REQ-018 | M𝓔 and S𝓔 first-class world state | Yes — world-state inspection | ADR §2 Positive |
-| REQ-019 | M𝓔 formula: resources, infrastructure, climate | Yes — unit test with known inputs | ADR §4.1 |
-| REQ-020 | S𝓔 formula: trust, coalition, info asymmetry | Yes — unit test with known inputs | ADR §4.1 |
+| REQ-019 | M𝓔 formula: resources, infrastructure, climate | Yes — unit test with known inputs | ADR §2 Positive |
+| REQ-020 | S𝓔 formula: trust, coalition, info asymmetry | Yes — unit test with known inputs | ADR §2 Positive |
 | REQ-021 | Entropy recomputed at every resolution | Yes — event-log inspection | ADR §2 Decision |
-| REQ-022 | Anti-entropy as explicit resource-consuming action | Yes — ledger audit | ADR §4.2–4.5 |
+| REQ-022 | Anti-entropy as explicit resource-consuming action | Yes — ledger audit | ADR §1 Context |
 | REQ-023 | Entropy deterministically reproducible from log | Yes — replay test | ADR §2 Consequences |
 | REQ-024 | Atomic chronicle with Part A + Part B | Yes — publish test | ADR §2 Positive |
 | REQ-025 | Part B includes full state + entropy + log | Yes — schema validation | ADR §2 Positive |
 | REQ-026 | Chronicle published atomically | Yes — race-condition test | ADR §2 Consequences |
 | REQ-027 | Chronicles immutable after publish | Yes — CAS failure test | ADR §2 Positive |
 | REQ-028 | Epoch N+1 cites epoch N chronicle URL | Yes — init audit | ADR §2 Decision |
-| REQ-029 | Cooperation-dominant sub-encounters present | Yes — Nash equilibrium audit | ADR §2 Positive, §5.3 |
+| REQ-029 | Cooperation-dominant sub-encounters present | Yes — Nash equilibrium audit | ADR §2 Positive |
 | REQ-030 | Negotiations logged with timestamps | Yes — log schema test | ADR §2 Positive |
 | REQ-031 | Coalition pact breaches penalised | Yes — state-machine test | ADR §2 Positive |
 | REQ-032 | Fractures published with attribution | Yes — chronicle XPath test | ADR §2 Positive |
 | REQ-033 | Reformation cooldown configurable (default 2) | Yes — config test | ADR §2 Trade-offs |
 | REQ-034 | ToE rolling-horizon detector (H = 50) | Yes — multi-epoch replay | ADR §1 Context |
-| REQ-035 | Action-trace clustering for mechanism ID | Yes — clustering regression | ADR §4.5 |
+| REQ-035 | Action-trace clustering for mechanism ID | Yes — clustering regression | ADR §2 Consequences |
 | REQ-036 | Atomic ToE Discovery Publication | Yes — publish-after-race test | ADR §1 Context |
 | REQ-037 | ToE is global, not per-agent | Yes — ranking audit | ADR §1 Context |
 | REQ-038 | Multiple ToE Discoveries versioned | Yes — version-chain test | ADR §1 Context |
