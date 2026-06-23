@@ -1,0 +1,3 @@
+# Project
+
+Minimal Python project.

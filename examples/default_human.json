@@ -1,0 +1,27 @@
+{
+  "name": "Default Human",
+  "big_five": {
+    "openness": 0.5,
+    "conscientiousness": 0.5,
+    "extraversion": 0.5,
+    "agreeableness": 0.5,
+    "neuroticism": 0.5
+  },
+  "cognitive_biases": {
+    "loss_aversion": 0.5,
+    "overconfidence": 0.5,
+    "anchoring": 0.5,
+    "status_quo_bias": 0.5
+  },
+  "decision_heuristics": {
+    "satisficing": 0.5,
+    "maximization": 0.5,
+    "availability": 0.5,
+    "recognition": 0.5
+  },
+  "social_style": {
+    "cooperation_preference": 0.5,
+    "conflict_approach": "balanced",
+    "communication_style": "direct"
+  }
+}
