@@ -196,7 +196,7 @@ The threshold should be calibrated on holdout data; a starting heuristic is 0.6 
 
 ### 7.1 Trait Model Selection
 
-WWMMHD should adopt the **Big Five / OCEAN** as its canonical trait space for human profiles. Rationale:
+WWMHD should adopt the **Big Five / OCEAN** as its canonical trait space for human profiles. Rationale:
 - Enormous empirical base for each dimension
 - Compatible with LIWC feature extraction pipeline
 - Stable across languages (Costa & McCrae, 1992, *JPSP*) — important if WWMHD is multilingual
