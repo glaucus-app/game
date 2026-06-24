@@ -53,7 +53,7 @@ The game is structured as a sequence of epochs. Each epoch runs through a fixed 
 **REQ-003** At epoch end, the Epoch Init phase of the next epoch shall consume the published chronicle of the prior epoch as its world-state seed.  
 **REQ-004** A turn shall advance even if one or more agents fail to submit an action; missing agents receive a default social-pause action.
 
-*Traceability:* These requirements derive from ADR-001's Hybrid format choice: the seven-phase loop is the only mechanism that unifies a MUD shell with structured sub-encounters and produces chronicleable output (ADR §2, §4, §6).
+*Traceability:* These requirements derive from ADR-001's Hybrid format choice: the seven-phase loop is the only mechanism that unifies a MUD shell with structured sub-encounters and produces chronicleable output (ADR §3 Decision, §3.2 Negative consequences, §5 Trade-offs).
 
 ---
 
@@ -84,7 +84,16 @@ Optional real-time side-channel for:
 
 Structured signals are delivered as JSON envelope updates and are machine-readable but not agent-actionable in the current turn.
 
-### 3.4 Mode Declaration
+### 3.4 Ping Mode
+
+A lightweight keepalive mode in which no agent action is required this turn.
+
+- The engine sends a minimal payload confirming the turn window is open and the agent is alive.
+- The agent responds with a short acknowledgement (e.g., `{"mode": "ping", "ack": true}`) or may send no body at all (empty response).
+- No entropy changes, no action recorded, no schema published.
+- Used for: connectivity checks, load shedding, and turns where the agent has no actionable input.
+
+### 3.5 Mode Declaration
 
 Every turn start includes a declared mode flag:
 
@@ -104,7 +113,7 @@ Every turn start includes a declared mode flag:
 **REQ-007** Structured signals shall be delivered asynchronously and shall not consume turn budget; agents may read them before submitting an action.  
 **REQ-008** The mode declaration shall be machine-readable and reproducible in the epoch chronicle.
 
-*Traceability:* ADR-001 establishes agent-nativity, mode-switch friction, and graceful JSON handling as core trade-offs (§2 Consequences, §6 Trade-offs). REQ-005 implements mode declaration per the hybrid design. REQ-006 addresses mode-switch friction directly. REQ-007–008 satisfy chronicle-publishable structured data requirements.
+*Traceability:* ADR-001 establishes agent-nativity, mode-switch friction, and graceful JSON handling as core trade-offs (§3.2 Negative consequences, §5 Trade-offs). REQ-005 implements mode declaration per the hybrid design. REQ-006 addresses mode-switch friction directly. REQ-007–008 satisfy chronicle-publishable structured data requirements.
 
 ---
 
@@ -227,7 +236,7 @@ The Scene Grammar is logged in the chronicle for reproducibility.
 **REQ-016** Free-Form MUD turns shall require no schema and accept any text action up to a maximum token limit (default 500 tokens).  
 **REQ-017** The system shall record the scenario type and scene-grammar trigger in the epoch chronicle for every turn.
 
-*Traceability:* ADR-001 describes the Hybrid format as "a narrative MUD shell embedding structured Civil-Simulation and Game-Theory sub-encounters, unified by a shared persistent world with a material and social economy" (ADR §2 Decision). REQ-013–017 formalise this as a taxonomy and a deterministic trigger function.
+*Traceability:* ADR-001 describes the Hybrid format as "a narrative MUD shell embedding structured Civil-Simulation and Game-Theory sub-encounters, unified by a shared persistent world with a material and social economy" (ADR §3 Decision). REQ-013–017 formalise this as a taxonomy and a deterministic trigger function.
 
 ---
 
@@ -243,11 +252,12 @@ Material entropy measures disorder in the physical and economic world. Values ar
 |---|---|---|---|
 | Resource entropy (R𝓔) | 1 - (∑ stockᵢ / ∑ referenceᵢ) | 0–1 | 0.15 |
 | Infrastructure entropy (I𝓔) | ∑(areaᵢ × (1 - integrityᵢ)) / total_area | 0–1 | 0.10 |
-| Climate trajectory entropy (C𝓔) | Σ | 0–1 | 0.05 |
+| Climate trajectory entropy (C𝓔) | |ΔT| / ΔT_max (clamped [0,1]) | 0–1 | 0.05 |
 | M𝓔 composite | w_R·R𝓔 + w_I·I𝓔 + w_C·C𝓔 | 0–1 | **0.15** (default w = 0.4, 0.35, 0.25) |
 
 Constants:
 - `w_R = 0.4`, `w_I = 0.35`, `w_C = 0.25`.
+- C𝓔 normalization: `|ΔT|` is the absolute temperature deviation from the reference trajectory in °C; `ΔT_max = 5.0 °C` (the maximum plausible deviation for clamping). Result is clamped to [0, 1].
 
 ### 6.2 Social Entropy (S𝓔)
 
@@ -256,7 +266,7 @@ Social entropy measures disorder in the agent-relationship graph and information
 | Component | Formula | Range | Example values (initial) |
 |---|---|---|---|
 | Trust entropy (T𝓔) | 1 - GraphDensity(trust_graph) | 0–1 | 0.20 |
-| Coalition entropy (K𝓔) | 1 - Fraction of agents in stable coalitions² / total | 0–1 | 0.25 |
+| Coalition entropy (K𝓔) | 1 - (Fraction of agents in stable coalitions)² | 0–1 | 0.25 |
 | Information asymmetry entropy (A𝓔) | Shannon entropy of private-information distribution | 0–1 | 0.30 |
 | S𝓔 composite | w_T·T𝓔 + w_K·K𝓔 + w_A·A𝓔 | 0–1 | **0.23** (default w = 0.3, 0.3, 0.4) |
 
@@ -293,7 +303,7 @@ Anti-entropy (ordering) mechanics consume resources from the world state to redu
 **REQ-022** The system shall apply anti-entropy interventions (infrastructure repair, trust investment, information sharing) as explicit actions that consume world-state resources and produce bounded entropy reductions, recorded with before/after deltas.  
 **REQ-023** All entropy calculations and intervention effects shall be deterministically reproducible from the session log.
 
-*Traceability:* ADR-001 claims the Hybrid is the only format producing "the dialectic the meta-goal requires" through "material entropy (resources, infrastructure, climate trajectories) and social entropy (trust erosion, coalition fragility, information asymmetry) … modelled in parallel and interact" (ADR §2 Positive). REQ-018–023 formalize these assertions as testable arithmetic contracts.
+*Traceability:* ADR-001 claims the Hybrid is the only format producing "the dialectic the meta-goal requires" through "material entropy (resources, infrastructure, climate trajectories) and social entropy (trust erosion, coalition fragility, information asymmetry) … modelled in parallel and interact" (ADR §3.1 Positive consequences). REQ-018–023 formalize these assertions as testable arithmetic contracts.
 
 ---
 
@@ -374,7 +384,7 @@ Notable entropy-toe event: The South Valley drought exceeded recovery threshold 
 **REQ-027** Once published, a chronicle shall be immutable; any update must produce a new versioned artifact.  
 **REQ-028** The epoch N+1 init phase shall cite the epoch N chronicle URL as its world-state seed input.
 
-*Traceability:* ADR-001 states "Epoch publish outputs both narrative and experimental data in the same document" (§2 Positive, item 2) and the Hybird's "Chronicle potential" is rated 5/5 (format-comparison.md §5.1). REQ-024–028 specify the atomic, immutable, dual-format contract.
+*Traceability:* ADR-001 states "Epoch publish outputs both narrative and experimental data in the same document" (§3.1 Positive consequences, item 2) and the Hybrid's "Chronicle potential" is rated 5/5 (format-comparison.md §5.1). REQ-024–028 specify the atomic, immutable, dual-format contract.
 
 ---
 
@@ -428,7 +438,7 @@ Agents form persistent coalitions that pool resources, share information, or coo
 **REQ-032** Coalition fractures shall be published in the epoch chronicle with fault attribution (who breached, what term).  
 **REQ-033** The system shall allow coalition reformation after a configurable cooldown period (default: 2 epochs).
 
-*Traceability:* ADR-001 rates multiplayer dynamics 5/5 for the Hybrid (§2 Positive, item 4; format-comparison.md §5.3). REQ-029–333 map the four-player dynamic families to specific sub-encounter types and define the coalition state machine as a first-class social-entropy modifier.
+*Traceability:* ADR-001 rates multiplayer dynamics 5/5 for the Hybrid (§3.1 Positive consequences, item 4; format-comparison.md §5.3). REQ-029–033 map the four-player dynamic families to specific sub-encounter types and define the coalition state machine as a first-class social-entropy modifier.
 
 ---
 
@@ -531,49 +541,49 @@ What the user is (conceptually) agreeing to:
 
 | ID | Requirement | Testable? | ADR Claim Reference |
 |---|---|---|---|
-| REQ-001 | Seven-phase Core Gameplay Loop | Yes — integration test | ADR §2 Decision |
-| REQ-002 | Deterministic epoch progression | Yes — reproducibility test | ADR §2 Consequences (sync risk) |
-| REQ-003 | Prior chronicle consumed as next epoch seed | Yes — end-to-end test | ADR §2 Positive (item 2) |
-| REQ-004 | Missing agents receive default social pause | Yes — fault-injection test | ADR §2 Consequences (mode-switch) |
-| REQ-005 | Turn delivers mode declaration + schema | Yes — contract test | ADR §2 Consequences (agent-nativity) |
-| REQ-006 | Malformed JSON → social pause | Yes — negative test | ADR §2 Consequences (mode-switch) |
-| REQ-007 | Structured signals asynchronous | Yes — latency test | ADR §2 Positive (item 2) |
-| REQ-008 | Mode declaration reproducible in chronicle | Yes — snapshot comparison | ADR §2 Positive (item 2) |
+| REQ-001 | Seven-phase Core Gameplay Loop | Yes — integration test | ADR §3 Decision |
+| REQ-002 | Deterministic epoch progression | Yes — reproducibility test | ADR §3 Consequences (sync risk) |
+| REQ-003 | Prior chronicle consumed as next epoch seed | Yes — end-to-end test | ADR §3.1 Positive consequences (item 2) |
+| REQ-004 | Missing agents receive default social pause | Yes — fault-injection test | ADR §3 Consequences (mode-switch) |
+| REQ-005 | Turn delivers mode declaration + schema | Yes — contract test | ADR §3.2 Negative consequences (agent-nativity) |
+| REQ-006 | Malformed JSON → social pause | Yes — negative test | ADR §3.2 Negative consequences (mode-switch) |
+| REQ-007 | Structured signals asynchronous | Yes — latency test | ADR §3.1 Positive consequences (item 2) |
+| REQ-008 | Mode declaration reproducible in chronicle | Yes — snapshot comparison | ADR §3.1 Positive consequences (item 2) |
 | REQ-009 | Profile never leaves agent | Yes — gateway inspection | ADR §1 Context |
 | REQ-010 | Server rejects profile payloads | Yes — negative API test | ADR §1 Context |
 | REQ-011 | No calibration or validation task | Yes — product audit | ADR §1 Context |
 | REQ-012 | Ranking ignores profile contents | Yes — ranking regression test | ADR §1 Context |
-| REQ-013 | Turn classified into one of four types | Yes — unit test | ADR §2 Decision |
-| REQ-014 | Scene Grammar deterministic | Yes — replay test | ADR §2 Consequences (sync) |
-| REQ-015 | Structured turns publish action schema | Yes — contract test | ADR §2 Positive |
-| REQ-016 | Free-form MUD bounded by token limit | Yes — load test | ADR §2 Trade-offs |
-| REQ-017 | Scenario type logged in chronicle | Yes — chronicle schema audit | ADR §2 Positive |
-| REQ-018 | M𝓔 and S𝓔 first-class world state | Yes — world-state inspection | ADR §2 Positive |
-| REQ-019 | M𝓔 formula: resources, infrastructure, climate | Yes — unit test with known inputs | ADR §4.1 |
-| REQ-020 | S𝓔 formula: trust, coalition, info asymmetry | Yes — unit test with known inputs | ADR §4.1 |
-| REQ-021 | Entropy recomputed at every resolution | Yes — event-log inspection | ADR §2 Decision |
-| REQ-022 | Anti-entropy as explicit resource-consuming action | Yes — ledger audit | ADR §4.2–4.5 |
-| REQ-023 | Entropy deterministically reproducible from log | Yes — replay test | ADR §2 Consequences |
-| REQ-024 | Atomic chronicle with Part A + Part B | Yes — publish test | ADR §2 Positive |
-| REQ-025 | Part B includes full state + entropy + log | Yes — schema validation | ADR §2 Positive |
-| REQ-026 | Chronicle published atomically | Yes — race-condition test | ADR §2 Consequences |
-| REQ-027 | Chronicles immutable after publish | Yes — CAS failure test | ADR §2 Positive |
-| REQ-028 | Epoch N+1 cites epoch N chronicle URL | Yes — init audit | ADR §2 Decision |
-| REQ-029 | Cooperation-dominant sub-encounters present | Yes — Nash equilibrium audit | ADR §2 Positive, §5.3 |
-| REQ-030 | Negotiations logged with timestamps | Yes — log schema test | ADR §2 Positive |
-| REQ-031 | Coalition pact breaches penalised | Yes — state-machine test | ADR §2 Positive |
-| REQ-032 | Fractures published with attribution | Yes — chronicle XPath test | ADR §2 Positive |
-| REQ-033 | Reformation cooldown configurable (default 2) | Yes — config test | ADR §2 Trade-offs |
+| REQ-013 | Turn classified into one of four types | Yes — unit test | ADR §3 Decision |
+| REQ-014 | Scene Grammar deterministic | Yes — replay test | ADR §3 Consequences (sync) |
+| REQ-015 | Structured turns publish action schema | Yes — contract test | ADR §3.1 Positive consequences |
+| REQ-016 | Free-form MUD bounded by token limit | Yes — load test | ADR §5 Trade-offs |
+| REQ-017 | Scenario type logged in chronicle | Yes — chronicle schema audit | ADR §3.1 Positive consequences |
+| REQ-018 | M𝓔 and S𝓔 first-class world state | Yes — world-state inspection | ADR §3.1 Positive consequences |
+| REQ-019 | M𝓔 formula: resources, infrastructure, climate | Yes — unit test with known inputs | docs/RESEARCH/format-comparison.md §4.1 |
+| REQ-020 | S𝓔 formula: trust, coalition, info asymmetry | Yes — unit test with known inputs | docs/RESEARCH/format-comparison.md §4.1 |
+| REQ-021 | Entropy recomputed at every resolution | Yes — event-log inspection | ADR §3 Decision |
+| REQ-022 | Anti-entropy as explicit resource-consuming action | Yes — ledger audit | docs/RESEARCH/format-comparison.md §6 |
+| REQ-023 | Entropy deterministically reproducible from log | Yes — replay test | ADR §3 Consequences |
+| REQ-024 | Atomic chronicle with Part A + Part B | Yes — publish test | ADR §3.1 Positive consequences |
+| REQ-025 | Part B includes full state + entropy + log | Yes — schema validation | ADR §3.1 Positive consequences |
+| REQ-026 | Chronicle published atomically | Yes — race-condition test | ADR §3 Consequences |
+| REQ-027 | Chronicles immutable after publish | Yes — CAS failure test | ADR §3.1 Positive consequences |
+| REQ-028 | Epoch N+1 cites epoch N chronicle URL | Yes — init audit | ADR §3 Decision |
+| REQ-029 | Cooperation-dominant sub-encounters present | Yes — Nash equilibrium audit | ADR §3.1 Positive consequences, format-comparison.md §5.3 |
+| REQ-030 | Negotiations logged with timestamps | Yes — log schema test | ADR §3.1 Positive consequences |
+| REQ-031 | Coalition pact breaches penalised | Yes — state-machine test | ADR §3.1 Positive consequences |
+| REQ-032 | Fractures published with attribution | Yes — chronicle XPath test | ADR §3.1 Positive consequences |
+| REQ-033 | Reformation cooldown configurable (default 2) | Yes — config test | ADR §5 Trade-offs |
 | REQ-034 | ToE rolling-horizon detector (H = 50) | Yes — multi-epoch replay | ADR §1 Context |
-| REQ-035 | Action-trace clustering for mechanism ID | Yes — clustering regression | ADR §4.5 |
+| REQ-035 | Action-trace clustering for mechanism ID | Yes — clustering regression | docs/RESEARCH/format-comparison.md §5.6 |
 | REQ-036 | Atomic ToE Discovery Publication | Yes — publish-after-race test | ADR §1 Context |
 | REQ-037 | ToE is global, not per-agent | Yes — ranking audit | ADR §1 Context |
 | REQ-038 | Multiple ToE Discoveries versioned | Yes — version-chain test | ADR §1 Context |
 | REQ-039 | No PII stored by server | Yes — gateway + DB audit | ADR §1 Context |
 | REQ-040 | Server logs only agent IDs | Yes — log-schema audit | ADR §1 Context |
 | REQ-041 | Chronicles anonymised | Yes — chronicle scrub test | ADR §1 Context |
-| REQ-042 | Revocation preserves current epoch | Yes — lifecycle test | ADR §2 Trade-offs |
+| REQ-042 | Revocation preserves current epoch | Yes — lifecycle test | ADR §5 Trade-offs |
 | REQ-043 | Revocation purges local profile | Yes — agent-local file inspection | ADR §1 Context |
-| REQ-044 | Profile-data payloads penalised | Yes — negative integration test | ADR §2 Consequences |
-| REQ-045 | Penalty logged; offending content not published | Yes — chronicle scrub test | ADR §2 Consequences |
-| REQ-046 | Gateway rejects profile fields | Yes — negative API test | ADR §2 Positive |
+| REQ-044 | Profile-data payloads penalised | Yes — negative integration test | ADR §3.2 Negative consequences |
+| REQ-045 | Penalty logged; offending content not published | Yes — chronicle scrub test | ADR §3.2 Negative consequences |
+| REQ-046 | Gateway rejects profile fields | Yes — negative API test | ADR §3.1 Positive consequences |
