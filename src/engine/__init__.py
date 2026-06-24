@@ -1,3 +1,3 @@
-from .chronicle import ChronicleWriter
+from .entropy import EntropySystem
 
-__all__ = ["ChronicleWriter"]
+__all__ = ["EntropySystem"]
