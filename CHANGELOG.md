@@ -10,9 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0] - 2026-06-24
 
 ### Added
-- Full rebuild based on PRD v1.0 and ADR-001 (Hybrid format)
-- Core domain models, entropy engine, sub-encounter engines (GT, Economy, Civil-Sim, MUD)
-- Chronicle generator, ToE detector, privacy gateway, CLI
+- Project foundation: README.md, LICENSE (Apache-2.0), pyproject.toml v2.0.0, CHANGELOG.md
+- Directory structure with empty `__init__.py` scaffolding for: models, engine, chronicle, encounters, toe, gateway, cli
 
 ### Changed
 - Complete rewrite from placeholder MUD-only to hybrid architecture
