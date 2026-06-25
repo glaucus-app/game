@@ -174,7 +174,7 @@ class CivilSimEngine:
         region = action.get("region")
         target_value = action.get("target_value", 0.0)
         
-        old_value = world_state.climate.get(policy_type) if region is None else world_state.infrastructure.get(f"policy_{policy_type}_{region}")
+        old_value: Any = world_state.climate.get(policy_type) if region is None else world_state.infrastructure.get(f"policy_{policy_type}_{region}")
         
         if region is not None:
             policy_key = f"policy_{policy_type}_{region}"

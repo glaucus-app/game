@@ -1,9 +1,9 @@
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel
 
 
-class CoalitionState(str, Enum):
+class CoalitionState(StrEnum):
     PROBE = "probe"
     PACT = "pact"
     FRACTURE = "fracture"

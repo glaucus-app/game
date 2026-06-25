@@ -1,7 +1,7 @@
 import json
 
-from src.models.coalition import Coalition, CoalitionState
 from src.models.chronicle import ChronicleData
+from src.models.coalition import Coalition, CoalitionState
 from src.models.entropy import EntropyConfig, EntropySnapshot, MaterialEntropy, SocialEntropy
 from src.models.scenario import (
     Action,
@@ -104,7 +104,6 @@ def test_scenario():
         environmental_pressure=pressure,
         deadline_seconds=30,
     )
-    data = s.model_dump()
     json_str = s.model_dump_json()
     s2 = Scenario.model_validate_json(json_str)
     assert s2.title == "Resource Allocation Crisis"

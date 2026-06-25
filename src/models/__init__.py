@@ -1,3 +1,4 @@
+from src.models.chronicle import ChronicleData
 from src.models.coalition import Coalition, CoalitionState
 from src.models.entropy import EntropyConfig, EntropySnapshot, MaterialEntropy, SocialEntropy
 from src.models.scenario import (
@@ -9,7 +10,6 @@ from src.models.scenario import (
     ScenarioType,
 )
 from src.models.world import AgentState, ConsentStatus, TurnResult, WorldState
-from src.models.chronicle import ChronicleData
 
 __all__ = [
     "Coalition",

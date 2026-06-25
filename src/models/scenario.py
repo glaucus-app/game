@@ -1,16 +1,16 @@
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, Field
 
 
-class ScenarioType(str, Enum):
+class ScenarioType(StrEnum):
     FREE_FORM_MUD = "free_form_mud"
     CIVIL_SIM = "civil_sim"
     GAME_THEORY = "game_theory"
     ECONOMY = "economy"
 
 
-class InterfaceMode(str, Enum):
+class InterfaceMode(StrEnum):
     TEXT = "text"
     JSON = "json"
     PING = "ping"
@@ -28,7 +28,7 @@ class Scenario(BaseModel):
     title: str
     narrative: str
     mode: InterfaceMode
-    action_schema: dict | None = None
+    action_schema: dict[str, object] | None = None
     affected_agents: list[str]
     environmental_pressure: EnvironmentalPressure
     deadline_seconds: int
@@ -38,7 +38,7 @@ class ModeDeclaration(BaseModel):
     epoch: int
     turn: int
     mode: InterfaceMode
-    schema: dict | None = None
+    action_schema: dict[str, object] | None = None
     scene_frame: str
     deadline_seconds: int
 
@@ -47,5 +47,5 @@ class Action(BaseModel):
     agent_id: str
     scenario_id: str
     mode: InterfaceMode
-    payload: str | dict
+    payload: str | dict[str, object]
     timestamp: float

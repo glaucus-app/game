@@ -1,4 +1,5 @@
 from hashlib import sha256
+from typing import Any
 
 from src.models.world import AgentState, ConsentStatus, WorldState
 
@@ -10,7 +11,7 @@ class PrivacyViolationError(Exception):
 
 
 class PrivacyGateway:
-    PROFILE_FIELDS = {
+    PROFILE_FIELDS: set[str] = {
         "openness",
         "conscientiousness",
         "extraversion",
@@ -36,10 +37,10 @@ class PrivacyGateway:
         "user_id",
     }
 
-    def __init__(self):
-        self.privacy_violations: list[dict] = []
+    def __init__(self) -> None:
+        self.privacy_violations: list[dict[str, Any]] = []
 
-    def validate_action(self, agent_id: str, action_payload: dict | str) -> None:
+    def validate_action(self, agent_id: str, action_payload: dict[str, Any] | str) -> None:
         if isinstance(action_payload, str):
             return
 
@@ -52,9 +53,9 @@ class PrivacyGateway:
                 f"Profile data fields not allowed in action submission: {profile_fields_found}"
             )
 
-    def _log_privacy_violation(self, agent_id: str, fields: set, payload: dict) -> None:
+    def _log_privacy_violation(self, agent_id: str, fields: set[str], payload: dict[str, Any]) -> None:
         action_hash = sha256(str(payload).encode()).hexdigest()[:16]
-        violation = {
+        violation: dict[str, Any] = {
             "agent_id": agent_id,
             "fields_detected": list(fields),
             "action_hash": action_hash,
@@ -64,7 +65,7 @@ class PrivacyGateway:
     def check_consent(self, agent: AgentState) -> bool:
         return agent.consent_status == ConsentStatus.GRANTED
 
-    def apply_consent_action(self, agent: AgentState, action_type: str) -> dict | None:
+    def apply_consent_action(self, agent: AgentState, action_type: str) -> dict[str, Any] | None:
         if action_type == "grant":
             agent.consent_status = ConsentStatus.GRANTED
             return {"status": "granted", "agent_id": agent.agent_id}
@@ -76,8 +77,8 @@ class PrivacyGateway:
         return None
 
     def apply_anti_gaming_penalty(
-        self, world_state: WorldState, agent_id: str, action_payload: dict | str
-    ) -> dict:
+        self, world_state: WorldState, agent_id: str, action_payload: dict[str, Any] | str
+    ) -> dict[str, Any]:
         if isinstance(action_payload, str):
             return {"penalty_applied": False}
 
@@ -95,7 +96,7 @@ class PrivacyGateway:
         world_state.material_entropy = min(1.0, world_state.material_entropy + 0.15)
         world_state.social_entropy = min(1.0, world_state.social_entropy + 0.10)
 
-        penalty_record = {
+        penalty_record: dict[str, Any] = {
             "agent_id": agent_id,
             "action_hash": action_hash,
             "material_entropy_before": original_m_e,
@@ -115,7 +116,7 @@ class PrivacyGateway:
         hash_prefix = sha256(agent_id.encode()).hexdigest()[:8]
         return f"agent_{hash_prefix}"
 
-    def get_anonymised_violations(self) -> list[dict]:
+    def get_anonymised_violations(self) -> list[dict[str, Any]]:
         return [
             {
                 "agent_id": self.anonymise_agent_id(v["agent_id"]),

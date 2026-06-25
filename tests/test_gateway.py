@@ -72,7 +72,7 @@ def test_anti_gaming_penalty_caps_at_one():
     world_state = WorldState(epoch=1, turn=1, material_entropy=0.95, social_entropy=0.95)
     payload = {"name": "test"}
 
-    result = gateway.apply_anti_gaming_penalty(world_state, "agent_1", payload)
+    gateway.apply_anti_gaming_penalty(world_state, "agent_1", payload)
 
     assert world_state.material_entropy == 1.0
     assert world_state.social_entropy == 1.0
@@ -150,7 +150,6 @@ def test_anonymise_consistent():
 
 def test_get_anonymised_violations():
     gateway = PrivacyGateway()
-    agent = AgentState(agent_id="agent_sensitive", consent_status=ConsentStatus.GRANTED)
 
     gateway.privacy_violations.append({
         "agent_id": "agent_sensitive",

@@ -162,7 +162,7 @@ def test_mud_engine_create_mode_declaration():
     agents = make_agents()
     md = engine.create_mode_declaration(ws, ["agent_1"], agents)
     assert md.mode.value == "text"
-    assert md.schema is None
+    assert md.action_schema is None
     assert "Epoch 1" in md.scene_frame
 
 

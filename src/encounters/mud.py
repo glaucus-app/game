@@ -95,7 +95,7 @@ def _extract_region(text: str) -> str | None:
     if not rest:
         return None
     words = rest.split()
-    region_parts = []
+    region_parts: list[str] = []
     for w in words:
         if w[0].isupper() or (region_parts and not w[0].isupper()):
             region_parts.append(w)
