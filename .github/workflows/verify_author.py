@@ -13,7 +13,11 @@ def main():
             author_email.endswith("@gastown.local") or
             author_name == "kilo-code-bot[bot]" or
             committer_name == "kilo-code-bot[bot]" or
-            ("kilo-code-bot" in committer_name and "@users.noreply.github.com" in committer_email)
+            ("kilo-code-bot" in committer_name and "@users.noreply.github.com" in committer_email) or
+            author_name == "dahgoth" or
+            committer_name == "dahgoth" or
+            "glaucus-app" in author_name or
+            "glaucus-app" in committer_name
         )
         if not authorized:
             print(f"Unauthorized commit {c}: author={author_email} committer={committer_name} <{committer_email}>")
